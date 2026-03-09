@@ -1,0 +1,24 @@
+# API keys
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Agent runtime files (created during exercises)
+memory.json
+agent_memory.json
+
+# Solutions (revealed at end of workshop)
+**/solutions/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
