@@ -65,6 +65,18 @@ tools = [
     {
         "type": "function",
         "function": {
+            "name": "web_search",
+            "description": "Search the web for information",
+            "parameters": {
+                "type": "object",
+                "properties": {"query": {"type": "string"}},
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "remember",
             "description": "Save a fact to persistent memory",
             "parameters": {
@@ -94,6 +106,35 @@ SAFE_MATH = {
 }
 
 
+def web_search(query):
+    """Search DuckDuckGo and return text snippets. No API key needed."""
+    try:
+        url = "https://html.duckduckgo.com/html/?q=" + urllib.parse.quote(query)
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            html = resp.read().decode("utf-8")
+        results = []
+        for chunk in html.split('class="result__snippet"')[1:4]:
+            end = chunk.find("</")
+            if end > 0:
+                text = chunk[1:end]
+                clean = ""
+                in_tag = False
+                for ch in text:
+                    if ch == "<":
+                        in_tag = True
+                    elif ch == ">":
+                        in_tag = False
+                    elif not in_tag:
+                        clean += ch
+                clean = clean.replace("&amp;", "&").replace("&quot;", '"').replace("&#x27;", "'").strip()
+                if clean:
+                    results.append(clean)
+        return "\n\n".join(results) if results else "No results found."
+    except Exception as e:
+        return f"Search failed: {e}"
+
+
 def run_tool(name, args):
     if name == "get_current_time":
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -102,6 +143,8 @@ def run_tool(name, args):
             return str(eval(args["expression"], SAFE_MATH))
         except Exception as e:
             return f"Error: {e}"
+    if name == "web_search":
+        return web_search(args["query"])
     if name == "remember":
         memory[args["key"]] = args["value"]
         save_memory(memory)

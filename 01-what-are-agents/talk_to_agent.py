@@ -17,7 +17,6 @@ Press Ctrl+C to exit.
 
 import json
 import math
-import os
 import urllib.parse
 import urllib.request
 from datetime import datetime
