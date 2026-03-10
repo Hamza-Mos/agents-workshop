@@ -2,8 +2,6 @@
 
 A 3-hour hands-on workshop. You'll build a real AI agent from scratch, give it a personality, teach it to remember things, and then try to break it.
 
-**Date:** March 20, 2026 | **Venue:** Ideas Clinic, UWaterloo | **Hosted by:** Socratica x Velocity
-
 ## What you'll walk away with
 
 - A working AI agent you built yourself
