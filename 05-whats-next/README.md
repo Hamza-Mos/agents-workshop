@@ -30,6 +30,40 @@ Start with Exercise 4 in [Building Blocks](../02-building-blocks/4_mcp_server.py
 - [MCP documentation](https://modelcontextprotocol.io)
 - [Community MCP servers](https://github.com/modelcontextprotocol/servers) (12,000+ and growing)
 
+## Agents for academia
+
+The same primitives you learned today power tools built specifically for research. Here's what's out there:
+
+### Literature review and paper discovery
+
+- **[Elicit](https://elicit.com)** — searches, summarizes, and extracts data from 125M+ papers. Used by 2M+ researchers.
+- **[Semantic Scholar](https://www.semanticscholar.org)** — free AI-powered search from the Allen Institute (AI2). Understands topics, not just keywords.
+- **[Consensus](https://consensus.app)** — answers research questions by showing agree/disagree across studies.
+- **[Liner](https://liner.ai)** — AI agents for literature synthesis, peer review, and finding research gaps.
+- **[Connected Papers](https://www.connectedpapers.com)** / **[Research Rabbit](https://www.researchrabbit.ai)** / **[Litmaps](https://www.litmaps.com)** — visual citation graphs for discovering related work.
+
+### Paper review and writing
+
+- **[Paperpal](https://paperpal.com)** — writing support, paraphrasing, plagiarism detection, and submission readiness checks.
+- **[Scite](https://scite.ai)** — shows how a paper has been cited: supported, contradicted, or just mentioned.
+
+### Grading and teaching
+
+- **[Gradescope](https://www.gradescope.com)** — AI-assisted grading for assignments, exams, and handwritten work. Originally from UC Berkeley.
+
+### Coding agents
+
+- **Claude Code, Cursor, GitHub Copilot** — coding agents with tool calling under the hood.
+- **[Agent Skills](https://agentskills.io)** — an open standard for giving agents new capabilities via SKILL.md files. Works across 30+ products.
+
+### The connection to what you built today
+
+Every one of these tools runs on the same ideas you just learned:
+- Elicit searching 125M papers? **Tool calling.**
+- Consensus tracking agreement across studies? **An agent loop with structured output.**
+- scienceOS remembering your research context? **That's MEMORY.md.**
+- And every single one can hallucinate citations. **Part 04 applies here too.**
+
 ## Go deeper: research
 
 Open problems in agent safety and reliability:

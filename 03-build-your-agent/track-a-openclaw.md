@@ -173,16 +173,16 @@ Test the personality - message your agent and see if it matches the style you de
 
 ## Step 6: Add memory
 
-Create `~/.openclaw/workspace/MEMORY.md`:
+Copy the [template](templates/MEMORY.md) to your workspace:
 
-```markdown
-# Memory
+```bash
+cp 03-build-your-agent/templates/MEMORY.md ~/.openclaw/workspace/MEMORY.md
+```
 
-## Meta
-- Telegram Chat ID: [paste your chat ID here]
+Fill in your Telegram Chat ID, then restart:
 
-## Facts
-- (nothing yet - I'll add things as we talk)
+```bash
+openclaw gateway restart
 ```
 
 > **Important:** Include your Telegram Chat ID in MEMORY.md - the agent needs it to send you proactive notifications.
