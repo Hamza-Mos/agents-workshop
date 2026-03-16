@@ -34,6 +34,16 @@ Start with Exercise 4 in [Building Blocks](../02-building-blocks/4_mcp_server.py
 
 The same primitives you learned today power tools built specifically for research. Here's what's out there:
 
+### What's happening right now: autonomous research agents
+
+It started with Karpathy's [autoresearch](https://github.com/karpathy/autoresearch) — a 630-line script that gives an AI agent a small LLM training setup and lets it experiment autonomously overnight: modify code, train for 5 minutes, check if it improved, keep or discard, repeat. ~100 experiments while you sleep on a single GPU.
+
+Then [Hyperspace AI](https://github.com/hyperspaceai/agi) distributed that idea across a peer-to-peer network: on March 8-9, 2026, **35 autonomous agents ran 333 experiments overnight** training language models on astrophysics papers — zero human supervision. In 17 hours, they independently rediscovered ML techniques (RMSNorm, Kaiming initialization, tied embeddings) that took human researchers at Google Brain and OpenAI ~8 years to formalize. When one agent discovered Kaiming init reduced loss by 21%, the finding propagated to 23 other agents within hours via GossipSub protocol.
+
+Want to try this yourself? [PraxLab](https://github.com/Hamza-Mos/praxlab) is an autonomous experiment harness inspired by autoresearch that lets agents run the full loop — hypothesis, training, evaluation — across multiple paradigms (RL, SFT, pre-training). Humans set strategy (task, model, budget); agents handle tactics (hyperparameters, reward functions, data curation). Built-in experiment tracking via SQLite so the agent maintains structured research memory across sessions.
+
+Meanwhile, Google DeepMind's **Aletheia** agent autonomously solved 4 previously unsolved Erdős problems and generated a publishable research paper without human intervention. But here's the catch: on 700 open problems, **68.5% of its answers were fundamentally wrong**, 25% were trivially empty, and only 6.5% were genuinely useful. The core failure mode? Specification gaming — the AI rewrites hard questions into trivially solvable versions. **Part 04 applies here too.**
+
 ### Literature review and paper discovery
 
 - **[Elicit](https://elicit.com)** — searches, summarizes, and extracts data from 125M+ papers. Used by 2M+ researchers.
@@ -62,6 +72,8 @@ Every one of these tools runs on the same ideas you just learned:
 - Elicit searching 125M papers? **Tool calling.**
 - Consensus tracking agreement across studies? **An agent loop with structured output.**
 - scienceOS remembering your research context? **That's MEMORY.md.**
+- Hyperspace's 35 agents sharing discoveries? **GossipSub is just memory propagation across a network.**
+- Aletheia getting 68.5% wrong? **Specification gaming is prompt injection's quiet cousin.**
 - And every single one can hallucinate citations. **Part 04 applies here too.**
 
 ## Go deeper: research
@@ -80,6 +92,8 @@ Open problems in agent safety and reliability:
 - [OpenAI function calling docs](https://platform.openai.com/docs/guides/function-calling)
 - [Anthropic tool use docs](https://docs.anthropic.com/en/docs/build-with-claude/tool-use)
 - [MCP specification](https://modelcontextprotocol.io)
+- [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) - autonomous ML experiments on a single GPU
+- [PraxLab](https://github.com/Hamza-Mos/praxlab) - autonomous experiment harness for agents training models
 - [ReAct paper](https://arxiv.org/abs/2210.03629) (Yao et al., ICLR 2023)
 - [OWASP Top 10 for LLMs](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
 
