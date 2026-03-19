@@ -1,6 +1,6 @@
 # 00 - Setup
 
-About 10 minutes. **You do not need Python installed** because `uv` downloads it for you.
+**You do not need Python installed** because `uv` downloads it for you.
 
 ## 1. Open a terminal
 
