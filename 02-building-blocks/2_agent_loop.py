@@ -106,7 +106,26 @@ def agent(user_input):
     #
     #   5. Loop back to step 1. The model sees the results and decides next.
     # ==========================================================
-    pass  # <-- Remove this and write your loop here
+    
+    while True:
+        response = client.chat.completions.create(
+               model="gpt-5-mini", messages=messages, tools=tools
+           )
+        
+        msg = response.choices[0].message
+        messages.append(msg)
+
+        if not msg.tool_calls:
+            return msg.content
+
+        for tool_call in msg.tool_calls:
+            tool_args = json.loads(tool_call.function.arguments)
+            print(f"  [tool call]  {tool_call.function.name}({json.dumps(tool_args)})")
+            result = run_tool(tool_call.function.name, tool_args)
+            print(f"  [result]     {result}")
+            messages.append({"role": "tool", "tool_call_id": tool_call.id, "content": result})
+
+
 
 
 # -- Try it -----------------------------------------------------------------

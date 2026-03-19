@@ -44,8 +44,8 @@ tools = [
             #   "parameters": this tool takes no arguments, so use
             #                 {"type": "object", "properties": {}}
             # ==========================================================
-            "name": "___",
-            "description": "___",
+            "name": "___", # this will be a string
+            "description": "___", # this will be a string
             "parameters": {"type": "object", "properties": {}},
         },
     }
@@ -109,9 +109,9 @@ messages = [
         #   "content": what data do we send back?
         #              (hint: the result variable from Step 4)
         # ==========================================================
-        "role": "___",
-        "tool_call_id": "___",
-        "content": "___",
+        "role": "___", # this will be a string
+        "tool_call_id": None,
+        "content": None, 
     },
 ]
 
