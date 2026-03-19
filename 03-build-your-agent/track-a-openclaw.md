@@ -47,7 +47,7 @@ openclaw --version
 ## Step 3: Run onboarding
 
 ```bash
-openclaw onboard --install-daemon
+openclaw onboard
 ```
 
 The wizard walks you through setup. When prompted:
