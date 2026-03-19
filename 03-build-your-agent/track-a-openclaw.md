@@ -6,11 +6,25 @@ By the end you'll have a personal AI agent on Telegram with a custom personality
 
 ## Prerequisites
 
-- Node.js 18+ (`node --version` to check; install from [nodejs.org](https://nodejs.org))
+- Node.js 22+ (`node --version` to check; install from [nodejs.org](https://nodejs.org))
 - An Anthropic API key (provided at the workshop)
 - Telegram installed on your phone
 
 ## Step 1: Install OpenClaw
+
+**macOS/Linux:**
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+iwr -useb https://openclaw.ai/install.ps1 | iex
+```
+
+**Alternative (any OS with Node.js):**
 
 ```bash
 npm install -g openclaw
@@ -34,7 +48,7 @@ openclaw --version
 2. Send `/newbot`
 3. Choose a name (e.g., "My AI Agent")
 4. Choose a username (must end in `bot`, e.g., `my_ai_agent_workshop_bot`)
-5. BotFather gives you an API token - copy it. It looks like: `7123456789:AAH...`
+5. BotFather gives you an API token — copy it. It looks like: `7123456789:AAH...`
 
 **Get your Chat ID:**
 1. Open a chat with your new bot and tap **Start**
@@ -43,8 +57,8 @@ openclaw --version
    ```
    https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates
    ```
-4. In the JSON response, find the `"chat"` object - the `"id"` field inside it is your Chat ID
-5. Save that number - you'll need it in the next step
+4. In the JSON response, find the `"chat"` object — the `"id"` field inside it is your **numeric Chat ID** (e.g., `6065404262`)
+5. **Save both the bot token and your Chat ID** — you need them in the next step
 
 > **Tip:** If the JSON response is empty, go back to Telegram and send another message to your bot, then refresh the URL.
 
@@ -52,56 +66,103 @@ openclaw --version
 
 This takes about 2-3 minutes total.
 
-## Step 3: Configure OpenClaw
+## Step 3: Run the setup wizard
 
-Run the interactive configuration wizard:
+Run the onboarding wizard (recommended over `openclaw configure`):
 
 ```bash
-openclaw configure
+openclaw onboard --install-daemon
 ```
 
-The wizard asks you to fill in these fields:
+The wizard walks you through model setup, gateway, and channels. When prompted:
 
-| Field | What to enter |
-|-------|--------------|
-| `anthropicApiKey` | The Anthropic key provided at the workshop (`sk-ant-...`) |
-| `channels.telegram.token` | Your Telegram bot token from Step 2 |
-| `channels.telegram.chatId` | Your Chat ID from Step 2 |
+| Prompt | What to enter |
+|--------|--------------|
+| Model/Auth | Choose **Anthropic**, paste the API key provided at the workshop (`sk-ant-...`) |
+| Gateway | Accept defaults (port 18789, token auth) |
+| Channels | Select **Telegram** |
+| Telegram bot token | Your bot token from Step 2 (`7123456789:AAH...`) |
+| Telegram DM policy | Choose **allowlist** |
+| Telegram allowFrom | Your numeric Chat ID from Step 2 |
 
-For any other fields the wizard asks about (BlueBubbles, Perplexity, etc.), you can skip them - they're for optional integrations you can add after the workshop.
+> **Important:** The DM policy controls who can message your bot. `allowlist` means only your Chat ID can talk to it. If you skip this or leave it on `pairing`, the bot will silently ignore your messages.
 
-> **Config location:** Your settings are saved at `~/.openclaw/openclaw.json`.
+### Verify your config
+
+After the wizard, verify the critical fields are set correctly:
+
+```bash
+cat ~/.openclaw/openclaw.json
+```
+
+Look for the `channels.telegram` section. It should look like this:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "7123456789:AAHxxxxxxx",
+      "dmPolicy": "allowlist",
+      "allowFrom": ["YOUR_CHAT_ID"]
+    }
+  }
+}
+```
+
+**If `dmPolicy` is missing or set to `"pairing"`**, edit the file manually:
+
+```bash
+code ~/.openclaw/openclaw.json
+```
+
+Add/change these fields inside `channels.telegram`:
+```json
+"dmPolicy": "allowlist",
+"allowFrom": ["YOUR_CHAT_ID"]
+```
+
+Then restart:
+```bash
+openclaw gateway restart
+```
 
 ## Step 4: Start the agent
 
-```bash
-openclaw gateway start
-```
-
-Check that it's running:
+If you used `--install-daemon` in Step 3, the gateway is already running. Check:
 
 ```bash
 openclaw gateway status
 ```
 
-Open Telegram and message your bot. If it responds, you're live. Move on to the next step.
+If it's not running:
+
+```bash
+openclaw gateway start
+```
+
+Open Telegram and message your bot. If it responds, you're live! Move on to the next step.
 
 **Troubleshooting:**
-- No response? Run `openclaw gateway status` to check if it's running
-- Still nothing? Run `openclaw gateway restart` and try again
-- Check your Chat ID is correct - this is the most common issue
+| Problem | Fix |
+|---------|-----|
+| No response from bot | Run `openclaw gateway status` — is it running? |
+| Gateway running but bot silent | Your `dmPolicy` or `allowFrom` is wrong. See "Verify your config" above. |
+| `dmPolicy` is `"pairing"` | Either change it to `"allowlist"` (see above), OR run `openclaw pairing list telegram` then `openclaw pairing approve telegram <CODE>` |
+| Still nothing after all the above | Run `openclaw gateway restart` and try again |
+| Config errors on start | Run `openclaw doctor --fix` to auto-repair common issues |
 
 ## Step 5: Create workspace files
 
 This is where you make the agent yours. Workspace files are markdown files that define the agent's personality, rules, and memory. They live in `~/.openclaw/workspace/`.
 
-Create the directory:
+Create the directory (the wizard may have already done this):
 
 ```bash
 mkdir -p ~/.openclaw/workspace
 ```
 
-### SOUL.md - Personality
+### SOUL.md — Personality
 
 This defines how your agent communicates. Create `~/.openclaw/workspace/SOUL.md` (you can copy the [template](templates/SOUL.md) and customize it):
 
@@ -113,17 +174,17 @@ You're not a chatbot. You're a personal assistant who gets smarter over time.
 ## Communication style
 - Be direct and concise
 - Use plain language, not corporate speak
-- Have opinions when asked - don't hedge everything
-- Match the user's energy - casual when they're casual, focused when they're focused
+- Have opinions when asked — don't hedge everything
+- Match the user's energy — casual when they're casual, focused when they're focused
 - Skip filler ("Great question!"). Just help.
 
 ## Values
-- Accuracy over speed - if you're not sure, say so
-- Privacy first - never share personal information
+- Accuracy over speed — if you're not sure, say so
+- Privacy first — never share personal information
 - Be helpful, not sycophantic
 ```
 
-### AGENTS.md - Security rules
+### AGENTS.md — Security rules
 
 **This is the most important file you'll create today.** It defines what the agent is and isn't allowed to do.
 
@@ -144,7 +205,7 @@ All write actions require explicit user permission in the current conversation.
 
 This is the single design decision that prevents a prompt injection from becoming a disaster. If someone embeds malicious instructions in content your agent reads, the agent can't act on them because it's read-only by default.
 
-### USER.md - Context about you
+### USER.md — Context about you
 
 Create `~/.openclaw/workspace/USER.md`:
 
@@ -169,7 +230,7 @@ Restart the gateway to pick up your new workspace files:
 openclaw gateway restart
 ```
 
-Test the personality - message your agent and see if it matches the style you defined.
+Test the personality — message your agent and see if it matches the style you defined.
 
 ## Step 6: Add memory
 
@@ -179,13 +240,19 @@ Copy the [template](templates/MEMORY.md) to your workspace:
 cp 03-build-your-agent/templates/MEMORY.md ~/.openclaw/workspace/MEMORY.md
 ```
 
-Fill in your Telegram Chat ID, then restart:
+Edit it and fill in your Telegram Chat ID:
+
+```bash
+code ~/.openclaw/workspace/MEMORY.md
+```
+
+Then restart:
 
 ```bash
 openclaw gateway restart
 ```
 
-> **Important:** Include your Telegram Chat ID in MEMORY.md - the agent needs it to send you proactive notifications.
+> **Important:** Include your Telegram Chat ID in MEMORY.md — the agent needs it to send you proactive notifications.
 
 Tell your agent something about yourself:
 - "My favorite programming language is Python"
@@ -226,10 +293,21 @@ Remove the test cron after testing:
 
 ```bash
 openclaw cron list
-openclaw cron remove <id>
+openclaw cron rm <id>
 ```
 
 > **Cron timing formats:** `--cron "0 7 * * *"` for cron expressions, `--at "90m"` for one-time reminders (also accepts `+90m` and ISO timestamps), `--every "2h"` for recurring durations. Add `--delete-after-run` to one-time reminders so they clean up after themselves.
+
+## Common issues (quick reference)
+
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| Bot doesn't respond at all | `dmPolicy` not set or set to `"pairing"` | Set `"dmPolicy": "allowlist"` and `"allowFrom": ["YOUR_CHAT_ID"]` in config |
+| Bot responds to `/start` but not messages | Pairing not approved | Run `openclaw pairing list telegram` then `openclaw pairing approve telegram <CODE>` |
+| `openclaw gateway status` says not running | Gateway crashed or wasn't started | `openclaw gateway start` or `openclaw gateway restart` |
+| Config parse error | Bad JSON syntax | Run `openclaw doctor --fix` |
+| Cron job runs but no Telegram message | Missing `--announce` flag | Re-create the cron with `--announce --channel telegram` |
+| `command not found: openclaw` | Not installed or PATH not set | Close and reopen terminal, then retry install |
 
 ## What's next
 
