@@ -13,7 +13,7 @@ memory.json
 agent_memory.json
 
 # Solutions (revealed at end of workshop)
-**/solutions/
+**/*solutions/
 
 # OS
 .DS_Store
