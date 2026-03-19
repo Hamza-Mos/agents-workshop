@@ -167,7 +167,7 @@ Message your agent — it should match the personality you defined.
 cp 03-build-your-agent/templates/MEMORY.md ~/.openclaw/workspace/MEMORY.md
 ```
 
-Edit it and add your Telegram Chat ID (the agent needs it for proactive notifications):
+Edit it — add your Telegram Chat ID so the agent can send you proactive messages. To get your Chat ID, message `@userinfobot` on Telegram.
 
 ```bash
 code ~/.openclaw/workspace/MEMORY.md
