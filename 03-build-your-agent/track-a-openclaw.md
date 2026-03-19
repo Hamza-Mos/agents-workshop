@@ -39,14 +39,20 @@ openclaw --version
 2. Send `/newbot`, follow prompts, pick a username ending in `bot`
 3. Copy the bot token (looks like `7123456789:AAH...`)
 
+**Find and message your bot:**
+
+1. In Telegram, tap the search bar and type `@your_bot_username` (the username you chose)
+2. Tap the bot, then tap **Start**
+3. Send any message (e.g., "hi")
+
 **Get your Chat ID:**
 
-1. Message your new bot (tap Start, send "hi")
-2. Open this URL in your browser (replace the token):
+4. Now that you've messaged the bot, open this URL in your browser (replace the token):
+   Open this URL in your browser (replace the token):
    ```
    https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates
    ```
-3. Find `"chat": { "id": 123456789 }` — that number is your Chat ID
+5. Find `"chat": { "id": 123456789 }` — that number is your Chat ID
 
 > **Alternative:** Message `@userinfobot` on Telegram to get your ID instantly.
 
@@ -65,34 +71,50 @@ The wizard walks you through setup. When prompted:
 | Channel | **Telegram** |
 | Bot token | Your token from Step 2 |
 
-After the wizard finishes, open your config:
+### ⚠️ Fix DM policy (required after onboarding)
+
+The wizard defaults to `"dmPolicy": "pairing"`, which silently ignores all messages until you manually approve each sender. **You must change this.**
+
+Open your config:
 
 ```bash
 code ~/.openclaw/openclaw.json
 ```
 
-Find `channels.telegram` and make sure it has your Chat ID in `allowFrom`:
+Find `channels.telegram` — it will look like this:
 
 ```json
-{
-  "channels": {
-    "telegram": {
-      "enabled": true,
-      "botToken": "YOUR_TOKEN",
-      "dmPolicy": "allowlist",
-      "allowFrom": ["YOUR_CHAT_ID"]
-    }
-  }
+"telegram": {
+  "enabled": true,
+  "dmPolicy": "pairing",
+  "botToken": "YOUR_TOKEN",
+  "groupPolicy": "allowlist",
+  "streaming": "partial"
 }
 ```
 
-> **This is the #1 setup issue.** If `dmPolicy` is `"pairing"` or missing, your bot will silently ignore you. Change it to `"allowlist"` and add your numeric Chat ID to `allowFrom`.
+**Change `dmPolicy` to `"allowlist"` and add `allowFrom` with your Chat ID:**
+
+```json
+"telegram": {
+  "enabled": true,
+  "dmPolicy": "allowlist",
+  "allowFrom": ["YOUR_CHAT_ID"],
+  "botToken": "YOUR_TOKEN",
+  "groupPolicy": "allowlist",
+  "streaming": "partial"
+}
+```
+
+Replace `YOUR_CHAT_ID` with the numeric ID from Step 2 (e.g., `"6065404262"`).
 
 Save the file, then restart:
 
 ```bash
 openclaw gateway restart
 ```
+
+> **If you skip this step, your bot will not respond to any messages.**
 
 ## Step 4: Test it
 
