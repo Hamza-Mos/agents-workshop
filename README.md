@@ -1,5 +1,7 @@
 # Agents in the Wild: Building AI That Actually Does Things
 
+### [Workshop Slides](https://docs.google.com/presentation/d/1aOLggFxcjNJyCzIBuaZYleKcgOvIgmjX/edit?usp=sharing&ouid=101398429659460548301&rtpof=true&sd=true)
+
 A 3-hour hands-on workshop. You'll build a real AI agent from scratch, give it a personality, teach it to remember things, and then try to break it.
 
 ## What you'll walk away with
