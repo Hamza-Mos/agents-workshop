@@ -39,15 +39,10 @@ openclaw --version
 2. Send `/newbot`, follow prompts, pick a username ending in `bot`
 3. Copy the bot token (looks like `7123456789:AAH...`)
 
-**Get your Chat ID:**
+**Find your bot:**
 
-1. In Telegram, search for `@userinfobot` and message it
-2. It instantly replies with your numeric ID (e.g., `6065404262`) — copy that number
-
-**Find and message your bot:**
-
-3. In Telegram, search for `@your_bot_username` (the username you chose in BotFather)
-4. Tap the bot, then tap **Start**
+1. In Telegram, search for `@your_bot_username` (the username you chose in BotFather)
+2. Tap the bot, then tap **Start** (or send `/start`)
 
 ## Step 3: Run onboarding
 
@@ -64,50 +59,24 @@ The wizard walks you through setup. When prompted:
 | Channel | **Telegram** |
 | Bot token | Your token from Step 2 |
 
-### ⚠️ Fix DM policy (required after onboarding)
+### Approve your pairing code
 
-The wizard defaults to `"dmPolicy": "pairing"`, which silently ignores all messages until you manually approve each sender. **You must change this.**
+After onboarding, your bot uses **pairing mode** — it won't respond until you approve yourself.
 
-Open your config:
-
-```bash
-code ~/.openclaw/openclaw.json
-```
-
-Find `channels.telegram` — it will look like this:
-
-```json
-"telegram": {
-  "enabled": true,
-  "dmPolicy": "pairing",
-  "botToken": "YOUR_TOKEN",
-  "groupPolicy": "allowlist",
-  "streaming": "partial"
-}
-```
-
-**Change `dmPolicy` to `"allowlist"` and add `allowFrom` with your Chat ID:**
-
-```json
-"telegram": {
-  "enabled": true,
-  "dmPolicy": "allowlist",
-  "allowFrom": ["YOUR_CHAT_ID"],
-  "botToken": "YOUR_TOKEN",
-  "groupPolicy": "allowlist",
-  "streaming": "partial"
-}
-```
-
-Replace `YOUR_CHAT_ID` with the numeric ID from Step 2 (e.g., `"6065404262"`).
-
-Save the file, then restart:
-
-```bash
-openclaw gateway restart
-```
-
-> **If you skip this step, your bot will not respond to any messages.**
+1. Message your bot on Telegram (tap Start or send `/start`)
+2. The bot replies with something like:
+   ```
+   OpenClaw: access not configured.
+   Your Telegram user id: 6065404262
+   Pairing code: 2N7NYWUV
+   Ask the bot owner to approve with:
+   openclaw pairing approve telegram 2N7NYWUV
+   ```
+3. Copy the pairing code and run this in your terminal:
+   ```bash
+   openclaw pairing approve telegram YOUR_CODE
+   ```
+4. Send another message to your bot — it should respond now!
 
 ## Step 4: Test it
 
@@ -121,8 +90,9 @@ Message your bot on Telegram. If it responds, you're live.
 
 | Problem | Fix |
 |---------|-----|
-| Bot doesn't respond | Set `"dmPolicy": "allowlist"` and `"allowFrom": ["YOUR_CHAT_ID"]` in config, then `openclaw gateway restart` |
-| Gateway not running | `openclaw gateway start` |
+| Bot says "access not configured" | Run `openclaw pairing approve telegram YOUR_CODE` with the code the bot gave you |
+| Bot doesn't respond at all | `openclaw gateway status` — is it running? If not: `openclaw gateway start` |
+| Gateway running, still no response | Check `openclaw pairing list telegram` for pending codes to approve |
 | Config errors | `openclaw doctor --fix` |
 
 ## Step 5: Create workspace files
