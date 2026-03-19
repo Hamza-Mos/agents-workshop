@@ -2,6 +2,17 @@
 
 Set up a personal AI agent on Telegram with a custom personality, safety rules, and persistent memory.
 
+## Fresh start (if you're stuck)
+
+If you tried setting up before and want to start clean:
+
+```bash
+npm uninstall -g openclaw
+rm -rf ~/.openclaw
+```
+
+Then follow the steps below from the beginning.
+
 ## Prerequisites
 
 - Node.js 22+ (check: `node --version`; install from [nodejs.org](https://nodejs.org), Node 24 recommended)
