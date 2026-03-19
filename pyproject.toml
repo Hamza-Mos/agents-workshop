@@ -1,0 +1,9 @@
+[project]
+name = "agents-workshop"
+version = "0.1.0"
+description = "Agents in the Wild: Building AI That Actually Does Things"
+requires-python = ">=3.9"
+dependencies = [
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+]

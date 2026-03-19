@@ -15,7 +15,7 @@ A 3-hour hands-on workshop. You'll build a real AI agent from scratch, give it a
 
 | #  | Section | What you'll do |
 |----|---------|---------------|
-| 00 | [Setup](00-setup/) | Install Python, get your API key |
+| 00 | [Setup](00-setup/) | Install uv, get your API key |
 | 01 | [What Are Agents?](01-what-are-agents/) | Talk to a real agent, watch it think |
 | 02 | [Building Blocks](02-building-blocks/) | Build tool calling, an agent loop, and memory from scratch |
 | 03 | [Build Your Agent](03-build-your-agent/) | Build your own personal AI agent with personality and memory |
@@ -27,18 +27,24 @@ Start with [00-setup](00-setup/) if you haven't set up yet, or jump to [01-what-
 ## Quick start
 
 ```bash
+# 1. Install uv (installs Python for you automatically)
+curl -LsSf https://astral.sh/uv/install.sh | sh   # macOS/Linux
+# Windows (PowerShell): powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# 2. Clone and run
 git clone https://github.com/Hamza-Mos/agents-workshop.git
 cd agents-workshop
-pip install -r requirements.txt
 cp .env.example .env
 # paste your API key into .env (provided at the workshop)
-python3 01-what-are-agents/talk_to_agent.py
+uv run 01-what-are-agents/talk_to_agent.py
 ```
+
+`uv run` handles everything: downloads Python, installs dependencies, runs the script. No pip, no venv, no setup headaches.
 
 ## What you need
 
 - A laptop with WiFi
-- Python 3.9+ (for Parts 1-2 exercises)
-- Node.js 18+ (for Part 3 - OpenClaw agent setup)
+- Node.js 18+ (for Part 3 - OpenClaw agent setup) — install from [nodejs.org](https://nodejs.org/)
 - Telegram installed on your phone (for Part 3)
-- API keys are provided at the workshop - you don't pay for anything
+- API keys are provided at the workshop — you don't pay for anything
+- **You do NOT need Python installed** — uv downloads it for you

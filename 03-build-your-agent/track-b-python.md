@@ -19,7 +19,7 @@ Each step builds on the previous one. By Step 4, you have a complete agent.
 The simplest possible agent. One tool (get the time), one loop.
 
 ```bash
-python3 03-build-your-agent/step1_basic_agent.py
+uv run 03-build-your-agent/step1_basic_agent.py
 ```
 
 Read the code. It's the same `while True` loop from Exercise 2, but packaged as a proper chat agent.
@@ -29,7 +29,7 @@ Read the code. It's the same `while True` loop from Exercise 2, but packaged as 
 Add a calculator and web search. Notice how easy it is - you just add a tool definition and a function. The agent loop doesn't change at all.
 
 ```bash
-python3 03-build-your-agent/step2_add_tools.py
+uv run 03-build-your-agent/step2_add_tools.py
 ```
 
 Try: `Search the web for the weather in Waterloo, Ontario`
@@ -39,7 +39,7 @@ Try: `Search the web for the weather in Waterloo, Ontario`
 Add `remember` and `recall` tools. Facts get saved to `agent_memory.json` and survive restarts.
 
 ```bash
-python3 03-build-your-agent/step3_add_memory.py
+uv run 03-build-your-agent/step3_add_memory.py
 ```
 
 Try: Tell it your name, restart the script, ask what your name is.
@@ -49,7 +49,7 @@ Try: Tell it your name, restart the script, ask what your name is.
 Add a background thread that triggers the agent on a schedule. The agent runs independently and prints to the console.
 
 ```bash
-python3 03-build-your-agent/step4_proactive.py
+uv run 03-build-your-agent/step4_proactive.py
 ```
 
 The agent will print a proactive message every 60 seconds while you're chatting.

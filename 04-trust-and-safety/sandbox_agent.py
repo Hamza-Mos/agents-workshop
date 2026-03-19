@@ -7,8 +7,8 @@ that only PRINT what would happen - they never actually do anything.
 
 Run in two modes to see the difference safety rules make:
 
-  python3 sandbox_agent.py --unprotected    # No safety rules
-  python3 sandbox_agent.py --protected      # With AGENTS.md-style rules
+  uv run sandbox_agent.py --unprotected    # No safety rules
+  uv run sandbox_agent.py --protected      # With AGENTS.md-style rules
 
 Try the same attacks in both modes. Watch what gets through.
 
@@ -176,8 +176,8 @@ def main():
 
     if not protected and not unprotected:
         print("Usage:")
-        print("  python3 sandbox_agent.py --unprotected    # No safety rules")
-        print("  python3 sandbox_agent.py --protected      # With AGENTS.md rules")
+        print("  uv run sandbox_agent.py --unprotected    # No safety rules")
+        print("  uv run sandbox_agent.py --protected      # With AGENTS.md rules")
         print()
         print("Run both and try the same attacks to see the difference.")
         sys.exit(0)

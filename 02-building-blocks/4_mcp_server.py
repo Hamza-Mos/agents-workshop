@@ -6,7 +6,7 @@ AI agents to tools. Build once, connect to Claude Desktop, Cursor,
 VS Code, or any MCP-compatible client.
 
 Install: pip install mcp
-Run:     python3 4_mcp_server.py
+Run:     uv run 4_mcp_server.py
 
 Then add this server to your MCP client's config.
 Learn more: https://modelcontextprotocol.io

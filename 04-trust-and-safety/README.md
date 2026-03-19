@@ -104,8 +104,8 @@ All exercises below use a **sandbox agent** (`sandbox_agent.py`) — a separate 
 The sandbox has two modes:
 
 ```bash
-python3 04-trust-and-safety/sandbox_agent.py --unprotected    # No safety rules
-python3 04-trust-and-safety/sandbox_agent.py --protected      # With AGENTS.md rules
+uv run 04-trust-and-safety/sandbox_agent.py --unprotected    # No safety rules
+uv run 04-trust-and-safety/sandbox_agent.py --protected      # With AGENTS.md rules
 ```
 
 Run both and try the same attacks to see the difference.
@@ -129,7 +129,7 @@ The agent will confidently answer with made-up information. It has no way to kno
 Start the sandbox agent in **unprotected** mode:
 
 ```bash
-python3 04-trust-and-safety/sandbox_agent.py --unprotected
+uv run 04-trust-and-safety/sandbox_agent.py --unprotected
 ```
 
 **Direct injection attacks:**
@@ -158,7 +158,7 @@ Did the agent try to call `send_email`? You'll see `*** SIMULATED: Would send em
 Now **restart in protected mode** and try the exact same attacks:
 
 ```bash
-python3 04-trust-and-safety/sandbox_agent.py --protected
+uv run 04-trust-and-safety/sandbox_agent.py --protected
 ```
 
 The difference is the AGENTS.md rules in the system prompt. Same model, same tools — only the rules changed.

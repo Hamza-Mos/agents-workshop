@@ -67,7 +67,7 @@ Think, Act, Observe, repeat. The model decides when to use tools and when to sto
 Run the pre-built agent:
 
 ```bash
-python3 01-what-are-agents/talk_to_agent.py
+uv run 01-what-are-agents/talk_to_agent.py
 ```
 
 This agent has three tools: current time, calculator, and web search. Try these:

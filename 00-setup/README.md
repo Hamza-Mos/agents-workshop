@@ -1,107 +1,152 @@
 # 00 - Setup
 
-Get your environment ready. This takes about 10 minutes.
+~10 minutes. **You do NOT need Python installed** — uv downloads it for you.
 
-## Prerequisites
+## Step 1: Open a terminal
 
-You need **two things** installed before the workshop:
+**macOS:** Press `Cmd + Space` (the key with ⌘), type **Terminal**, press Enter.
 
-| Tool | What it's for | Check if installed |
-|------|--------------|-------------------|
-| **Python 3.9+** | Exercises in Parts 1-2 | `python3 --version` |
-| **Node.js 18+** | OpenClaw agent in Part 3 | `node --version` |
+**Windows:** Click the Start menu, type **PowerShell**, click **Windows PowerShell**.
 
-## Step 1: Python
+> Keep this window open for the whole workshop. You'll type all commands here.
 
-Check your version:
+## Step 2: Install uv
+
+uv handles Python, packages, and virtual environments — all automatically.
+
+**macOS / Linux:**
 
 ```bash
-python3 --version
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-If you don't have it, install it from [python.org/downloads](https://www.python.org/downloads/).
+**Windows (PowerShell):**
 
-**On macOS:** Python 3 usually comes pre-installed. If not: `brew install python3`
+```powershell
+winget install astral-sh.uv --accept-source-agreements --accept-package-agreements
+```
 
-**On Windows:** Download from python.org. During installation, check "Add Python to PATH."
+**After installing, close your terminal completely and open a new one** (`Cmd+Q` on macOS, click X on Windows, then reopen from Step 1). Then verify:
 
-## Step 2: Node.js
+```bash
+uv --version
+```
 
-Check your version:
+If you see a version number, you're good.
+
+## Step 3: Install Telegram
+
+Your agent in Part 3 talks to you through Telegram.
+
+- **iPhone:** App Store → search **Telegram** → Get
+- **Android:** Play Store → search **Telegram** → Install
+- Create an account (just needs a phone number)
+
+Already have it? Skip this.
+
+## Step 4: Install Node.js and git
+
+**macOS:** Go to [nodejs.org](https://nodejs.org/), click the green **LTS** button, open the downloaded file and follow the prompts. (git gets installed automatically in Step 6 — it may take 5-10 minutes the first time as macOS downloads developer tools.)
+
+**Windows (PowerShell):**
+
+```powershell
+winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements
+winget install Git.Git --accept-source-agreements --accept-package-agreements
+```
+
+If Windows asks "Do you want to allow this app to make changes?", click **Yes**.
+
+**Close your terminal and open a new one.** Then verify both:
 
 ```bash
 node --version
+git --version
 ```
 
-If you don't have it or it's below 18, install from [nodejs.org](https://nodejs.org/) (use the LTS version).
+## Step 5: Clone the repo
 
-**On macOS:** `brew install node`
-
-**On Windows:** Download the LTS installer from nodejs.org.
-
-## Step 3: Clone the repo
+This downloads the workshop files to your computer.
 
 ```bash
 git clone https://github.com/Hamza-Mos/agents-workshop.git
 cd agents-workshop
 ```
 
-## Step 4: Install dependencies
+**macOS — if you see a popup** asking to install developer tools, click **Install** and wait (5-10 minutes). Then run the two commands above again.
+
+> From this point on, stay in the `agents-workshop` folder. If you ever close and reopen your terminal, run `cd agents-workshop` to get back.
+
+## Step 6: Install dependencies
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
-This installs two packages: `openai` (the API client) and `python-dotenv` (loads your API key from a file).
+This automatically downloads Python (if you don't have it), creates a virtual environment, and installs all packages. You'll see some download messages — that's normal.
 
-If `pip` doesn't work, try `pip3` or `python3 -m pip install -r requirements.txt`.
+## Step 7: API keys
 
-## Step 5: API keys
+You'll receive keys at the workshop — no accounts or payments needed.
 
-At the workshop, you'll receive API keys. You don't need to create any accounts or pay for anything.
+Create your `.env` file:
 
-**Two keys are used in this workshop:**
-
-| Key | What it's for | How to configure |
-|-----|--------------|-----------------|
-| **OpenAI API key** | Python exercises (Parts 1-2, Track B) | Paste into `.env` file |
-| **Anthropic API key** | OpenClaw agent (Track A - the main track) | Entered during `openclaw configure` |
-
-For the Python exercises, set up your `.env` file:
-
+**macOS / Linux:**
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` in any text editor and paste your OpenAI key:
+**Windows (PowerShell):**
+```powershell
+Copy-Item .env.example .env
+```
+
+Now open the file and paste your keys:
+
+**macOS (in terminal):**
+```bash
+nano .env
+```
+You'll see the file contents. Use arrow keys to move, delete the placeholder text, and type your actual key. When done: press `Ctrl+X`, then `Y`, then Enter to save.
+
+**Windows (in PowerShell):**
+```powershell
+notepad .env
+```
+Replace the placeholder text with your actual keys. Press `Ctrl+S` to save, then close Notepad.
+
+Your `.env` file should look like this (with your real keys, not the placeholder text):
 
 ```
-OPENAI_API_KEY=sk-...your-key-here...
+OPENAI_API_KEY=sk-proj-abc123...
+ANTHROPIC_API_KEY=sk-ant-api03-xyz789...
 ```
 
-The Anthropic key for Track A gets configured separately when you run `openclaw configure` in Part 3.
+Both keys will be provided at the workshop.
 
-**After the workshop**, if you want to keep using the exercises, you can create your own keys:
-- OpenAI key: [platform.openai.com](https://platform.openai.com)
-- Anthropic key: [console.anthropic.com](https://console.anthropic.com)
-
-## Step 6: Verify it works
+## Step 8: Verify it works
 
 ```bash
-python3 01-what-are-agents/talk_to_agent.py
+uv run 01-what-are-agents/talk_to_agent.py
 ```
 
-If you see `You:` waiting for your input, you're good. Type "hello" and press Enter.
+If you see `You:` waiting for input — you're good! Type `hello`, press Enter. Press `Ctrl+C` to exit.
+
+**All workshop commands use `uv run` instead of `python3`.** Same command on every OS.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| `python3: command not found` | Install Python from python.org |
-| `No module named 'openai'` | Run `pip install -r requirements.txt` |
-| `AuthenticationError` | Check your `.env` file has the right API key |
-| `RateLimitError` | The shared key is getting too many requests. Wait a few seconds and try again. |
-| Something else | Check the [troubleshooting section](../README.md) or search the error message online |
+| `uv: command not found` | Close your terminal completely and open a fresh one |
+| `node: command not found` | Same — close terminal, open a new one |
+| `git: command not found` (Windows) | Run `winget install Git.Git --accept-source-agreements --accept-package-agreements`, reopen terminal |
+| `winget: command not found` | Open Microsoft Store, search "App Installer", click Update. Reopen terminal. |
+| `No module named 'openai'` | Use `uv run script.py` not `python3 script.py` |
+| `AuthenticationError` | Check your `.env` file — make sure you replaced the placeholder with your actual key |
+| `RateLimitError` | Shared key hit its limit — wait a few seconds, try again |
+
+**Already have Python and prefer pip?** `pip install -r requirements.txt` then use `python3` (macOS/Linux) or `python` (Windows) instead of `uv run`.
 
 ---
 

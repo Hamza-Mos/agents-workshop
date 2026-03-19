@@ -46,7 +46,7 @@ Nothing magical. The model reads the name and description, decides if the tool i
 ## Exercise 1: Tool calling basics (5 min)
 
 ```bash
-python3 02-building-blocks/1_tool_calling_basics.py
+uv run 02-building-blocks/1_tool_calling_basics.py
 ```
 
 This script walks you through a single tool call, step by step. Read the output carefully - it shows exactly what happens at each stage.
@@ -74,7 +74,7 @@ That's it. The model decides what to do. Your code just executes tools and feeds
 ## Exercise 2: The agent loop (5 min)
 
 ```bash
-python3 02-building-blocks/2_agent_loop.py
+uv run 02-building-blocks/2_agent_loop.py
 ```
 
 This is a complete working agent in about 40 lines. Try multi-step queries:
@@ -99,7 +99,7 @@ You don't need a vector database. You don't need RAG. For a personal agent, a si
 ## Exercise 3: Memory (5 min)
 
 ```bash
-python3 02-building-blocks/3_memory_agent.py
+uv run 02-building-blocks/3_memory_agent.py
 ```
 
 Try this:
@@ -117,7 +117,7 @@ MCP (Model Context Protocol) is a standard created by Anthropic for connecting A
 
 ```bash
 pip install mcp
-python3 02-building-blocks/4_mcp_server.py
+uv run 02-building-blocks/4_mcp_server.py
 ```
 
 This creates a minimal MCP server with two tools. You can connect it to Claude Desktop or any MCP-compatible client.
