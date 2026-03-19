@@ -39,22 +39,15 @@ openclaw --version
 2. Send `/newbot`, follow prompts, pick a username ending in `bot`
 3. Copy the bot token (looks like `7123456789:AAH...`)
 
-**Find and message your bot:**
-
-1. In Telegram, tap the search bar and type `@your_bot_username` (the username you chose)
-2. Tap the bot, then tap **Start**
-3. Send any message (e.g., "hi")
-
 **Get your Chat ID:**
 
-4. Now that you've messaged the bot, open this URL in your browser (replace the token):
-   Open this URL in your browser (replace the token):
-   ```
-   https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates
-   ```
-5. Find `"chat": { "id": 123456789 }` — that number is your Chat ID
+1. In Telegram, search for `@userinfobot` and message it
+2. It instantly replies with your numeric ID (e.g., `6065404262`) — copy that number
 
-> **Alternative:** Message `@userinfobot` on Telegram to get your ID instantly.
+**Find and message your bot:**
+
+3. In Telegram, search for `@your_bot_username` (the username you chose in BotFather)
+4. Tap the bot, then tap **Start**
 
 ## Step 3: Run onboarding
 
