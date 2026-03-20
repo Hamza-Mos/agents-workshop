@@ -67,7 +67,7 @@ You'll use Telegram in Part 3.
 
 ## 6. Add API keys
 
-Please go to this website for API keys: **bit.ly/agents-workshop-keys**
+Please go to this website for API keys: **[bit.ly/agents-workshop-keys](https://bit.ly/agents-workshop-keys)**
 
 **macOS / Linux**
 
