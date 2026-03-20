@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # Load the API key from the .env file in the repo root
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 client = OpenAI()
 
 # The system prompt tells the model how to behave

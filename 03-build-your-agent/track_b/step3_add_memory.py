@@ -9,7 +9,7 @@ Check your work against solutions/step3_add_memory.py
 """
 
 import json
-import math
+import os
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -18,7 +18,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 client = OpenAI()
 
 MEMORY_FILE = Path(__file__).parent / "agent_memory.json"
@@ -72,12 +72,17 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "calculate",
-            "description": "Evaluate a math expression",
+            "name": "get_weather",
+            "description": "Get the current weather for any city in the world. Returns temperature, conditions, humidity, and wind.",
             "parameters": {
                 "type": "object",
-                "properties": {"expression": {"type": "string"}},
-                "required": ["expression"],
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "City name, e.g. 'Toronto', 'London', 'Tokyo'",
+                    }
+                },
+                "required": ["city"],
             },
         },
     },
@@ -101,7 +106,7 @@ tools = [
         #   "key" - short label like 'name', 'major', 'favorite_color'
         #   "value" - the fact to save
         #
-        # Pattern (same as calculate/web_search above):
+        # Pattern (same as get_weather/web_search above):
         #   "parameters": {
         #       "type": "object",
         #       "properties": {
@@ -132,38 +137,43 @@ tools = [
     },
 ]
 
-SAFE_MATH = {
-    "__builtins__": {},
-    "sqrt": math.sqrt, "sin": math.sin, "cos": math.cos,
-    "log": math.log, "pi": math.pi, "e": math.e,
-    "abs": abs, "round": round,
-}
+
+def get_weather(city):
+    """Get real-time weather from wttr.in (no API key needed)."""
+    try:
+        url = f"https://wttr.in/{urllib.parse.quote(city)}?format=j1"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+        if "data" in data:
+            data = data["data"]
+        c = data["current_condition"][0]
+        return (
+            f"{city}: {c['temp_C']}\u00b0C ({c['temp_F']}\u00b0F), "
+            f"{c['weatherDesc'][0]['value']}, "
+            f"Humidity: {c['humidity']}%, "
+            f"Wind: {c['windspeedKmph']} km/h"
+        )
+    except Exception as e:
+        return f"Could not get weather for {city}: {e}"
 
 
 def web_search(query):
-    """Search DuckDuckGo and return text snippets. No API key needed."""
+    """Search the web via Brave Search API."""
+    api_key = os.environ.get("BRAVE_SEARCH_API_KEY", "")
+    url = "https://api.search.brave.com/res/v1/web/search?q=" + urllib.parse.quote(query)
+    req = urllib.request.Request(url, headers={
+        "Accept": "application/json",
+        "X-Subscription-Token": api_key,
+    })
     try:
-        url = "https://html.duckduckgo.com/html/?q=" + urllib.parse.quote(query)
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            html = resp.read().decode("utf-8")
+            data = json.loads(resp.read())
         results = []
-        for chunk in html.split('class="result__snippet"')[1:4]:
-            end = chunk.find("</")
-            if end > 0:
-                text = chunk[1:end]
-                clean = ""
-                in_tag = False
-                for ch in text:
-                    if ch == "<":
-                        in_tag = True
-                    elif ch == ">":
-                        in_tag = False
-                    elif not in_tag:
-                        clean += ch
-                clean = clean.replace("&amp;", "&").replace("&quot;", '"').replace("&#x27;", "'").strip()
-                if clean:
-                    results.append(clean)
+        for i, r in enumerate(data.get("web", {}).get("results", [])[:5]):
+            title = r.get("title", "")
+            desc = r.get("description", "")
+            results.append(f"{i+1}. {title}\n   {desc}")
         return "\n\n".join(results) if results else "No results found."
     except Exception as e:
         return f"Search failed: {e}"
@@ -173,11 +183,8 @@ def run_tool(name, args):
     """Execute a tool by name and return the result as a string."""
     if name == "get_current_time":
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if name == "calculate":
-        try:
-            return str(eval(args["expression"], SAFE_MATH))
-        except Exception as e:
-            return f"Error: {e}"
+    if name == "get_weather":
+        return get_weather(args["city"])
     if name == "web_search":
         return web_search(args["query"])
     # ==========================================================
@@ -223,7 +230,7 @@ def main():
     print("Agent with Memory (Step 3)")
     if memory:
         print(f"Loaded {len(memory)} memories from {MEMORY_FILE.name}")
-    print("Tools: time, calculator, web search, remember, recall")
+    print("Tools: time, weather, web search, remember, recall")
     print("Press Ctrl+C to exit\n")
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]

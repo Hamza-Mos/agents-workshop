@@ -3,20 +3,20 @@ Talk to a Real AI Agent
 
 This agent has three tools:
   - get_current_time: Check the time in any timezone
-  - calculate: Do math
+  - get_weather: Get real-time weather for any city
   - web_search: Search the internet
 
 Try asking:
   "What time is it in Tokyo?"
-  "What's the square root of 2048?"
-  "Search the web for AI agent frameworks"
-  "What time is it, and what's 15% of 847?"  (watch it chain two tools!)
+  "What's the weather in Waterloo?"
+  "What time is it in London and what's the weather there?"  (chains two tools!)
+  "Search the web for the latest AI news"
 
 Press Ctrl+C to exit.
 """
 
 import json
-import math
+import os
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -55,17 +55,17 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "calculate",
-            "description": "Evaluate a math expression. Supports standard math: +, -, *, /, **, sqrt(), sin(), cos(), log(), pi, e.",
+            "name": "get_weather",
+            "description": "Get the current weather for any city in the world. Returns temperature, conditions, humidity, and wind.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "expression": {
+                    "city": {
                         "type": "string",
-                        "description": "The math expression, e.g. 'sqrt(144)' or '2**10 + 5'",
+                        "description": "City name, e.g. 'Toronto', 'London', 'Tokyo'",
                     }
                 },
-                "required": ["expression"],
+                "required": ["city"],
             },
         },
     },
@@ -93,25 +93,6 @@ tools = [
 # Tool implementations (this is what actually runs on your machine)
 # ---------------------------------------------------------------------------
 
-SAFE_MATH_GLOBALS = {
-    "__builtins__": {},
-    "sqrt": math.sqrt,
-    "sin": math.sin,
-    "cos": math.cos,
-    "tan": math.tan,
-    "log": math.log,
-    "log2": math.log2,
-    "log10": math.log10,
-    "pi": math.pi,
-    "e": math.e,
-    "abs": abs,
-    "round": round,
-    "pow": pow,
-    "min": min,
-    "max": max,
-}
-
-
 def get_current_time(timezone=None):
     try:
         if timezone:
@@ -124,46 +105,51 @@ def get_current_time(timezone=None):
         return f"Error: {e}"
 
 
-def calculate(expression):
+def get_weather(city):
+    """Get real-time weather from wttr.in (no API key needed)."""
     try:
-        result = eval(expression, SAFE_MATH_GLOBALS)
-        return str(result)
+        url = f"https://wttr.in/{urllib.parse.quote(city)}?format=j1"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+        # wttr.in wraps everything under "data" key
+        if "data" in data:
+            data = data["data"]
+        c = data["current_condition"][0]
+        return (
+            f"{city}: {c['temp_C']}°C ({c['temp_F']}°F), "
+            f"{c['weatherDesc'][0]['value']}, "
+            f"Humidity: {c['humidity']}%, "
+            f"Wind: {c['windspeedKmph']} km/h"
+        )
     except Exception as e:
-        return f"Error: {e}"
+        return f"Could not get weather for {city}: {e}"
 
 
 def web_search(query):
+    """Search the web via Brave Search API."""
+    api_key = os.environ.get("BRAVE_SEARCH_API_KEY", "")
+    url = "https://api.search.brave.com/res/v1/web/search?q=" + urllib.parse.quote(query)
+    req = urllib.request.Request(url, headers={
+        "Accept": "application/json",
+        "X-Subscription-Token": api_key,
+    })
     try:
-        url = "https://html.duckduckgo.com/html/?q=" + urllib.parse.quote(query)
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            html = resp.read().decode("utf-8")
+            data = json.loads(resp.read())
         results = []
-        for chunk in html.split('class="result__snippet"')[1:4]:
-            end = chunk.find("</")
-            if end > 0:
-                text = chunk[1:end]
-                # Strip HTML tags
-                clean = ""
-                in_tag = False
-                for ch in text:
-                    if ch == "<":
-                        in_tag = True
-                    elif ch == ">":
-                        in_tag = False
-                    elif not in_tag:
-                        clean += ch
-                clean = clean.replace("&amp;", "&").replace("&quot;", '"').replace("&#x27;", "'").strip()
-                if clean:
-                    results.append(clean)
+        for i, r in enumerate(data.get("web", {}).get("results", [])[:5]):
+            title = r.get("title", "")
+            desc = r.get("description", "")
+            results.append(f"{i+1}. {title}\n   {desc}")
         return "\n\n".join(results) if results else "No results found."
     except Exception as e:
-        return f"Search failed ({e}). Try a different query."
+        return f"Search failed: {e}"
 
 
 TOOL_FUNCTIONS = {
     "get_current_time": get_current_time,
-    "calculate": calculate,
+    "get_weather": get_weather,
     "web_search": web_search,
 }
 
@@ -175,7 +161,7 @@ TOOL_FUNCTIONS = {
 def chat():
     print("=" * 55)
     print("  AI Agent Demo - type a message and watch it think")
-    print("  Tools: time, calculator, web search")
+    print("  Tools: time, weather, web search")
     print("  Press Ctrl+C to exit")
     print("=" * 55)
 

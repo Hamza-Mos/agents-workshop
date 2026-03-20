@@ -44,7 +44,7 @@ uv run 01-what-are-agents/talk_to_agent.py
 ## What you need
 
 - A laptop with WiFi
-- Node.js 18+ (for Part 3 - OpenClaw agent setup) — install from [nodejs.org](https://nodejs.org/)
+- Node.js 22+ (for Part 3 - OpenClaw agent setup) — install from [nodejs.org](https://nodejs.org/)
 - Telegram installed on your phone (for Part 3)
 - API keys are provided at the workshop — you don't pay for anything
 - **You do NOT need Python installed** — uv downloads it for you

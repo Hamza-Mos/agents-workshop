@@ -67,7 +67,7 @@ You'll use Telegram in Part 3.
 
 ## 6. Add API keys
 
-You'll receive the keys at the workshop.
+Please go to this website for API keys: **bit.ly/agents-workshop-keys**
 
 **macOS / Linux**
 
@@ -81,7 +81,9 @@ cp .env.example .env
 Copy-Item .env.example .env
 ```
 
-Open `.env` in your favourite code editor and replace the placeholders with your real keys.
+Open `.env` in your favourite code editor and paste in both keys (OpenAI + Anthropic).
+
+> Stuck? Raise your hand — TAs are circulating.
 
 ## 7. Verify it works
 

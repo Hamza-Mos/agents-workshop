@@ -11,14 +11,15 @@ YOUR TASK: Implement the agent() function below, then run this script.
 Check your work against solutions/2_agent_loop.py
 
 Try:
-  "What time is it, and what's 2 to the power of 10?"
-  "What's the square root of the number of seconds in a day?"
+  "What time is it and what's the weather in Toronto?"
+  "Compare the weather in Tokyo and London right now."
 
 Watch it chain multiple tool calls automatically.
 """
 
 import json
-import math
+import urllib.parse
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -43,30 +44,48 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "calculate",
-            "description": "Evaluate a math expression like '2**10' or 'sqrt(86400)'",
+            "name": "get_weather",
+            "description": "Get the current weather for any city in the world. Returns temperature, conditions, humidity, and wind.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "expression": {
+                    "city": {
                         "type": "string",
-                        "description": "The math expression to evaluate",
+                        "description": "City name, e.g. 'Toronto', 'London', 'Tokyo'",
                     }
                 },
-                "required": ["expression"],
+                "required": ["city"],
             },
         },
     },
 ]
 
-SAFE_MATH = {"__builtins__": {}, "sqrt": math.sqrt, "pi": math.pi, "e": math.e}
+
+def get_weather(city):
+    """Get real-time weather from wttr.in (no API key needed)."""
+    try:
+        url = f"https://wttr.in/{urllib.parse.quote(city)}?format=j1"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+        if "data" in data:
+            data = data["data"]
+        c = data["current_condition"][0]
+        return (
+            f"{city}: {c['temp_C']}°C ({c['temp_F']}°F), "
+            f"{c['weatherDesc'][0]['value']}, "
+            f"Humidity: {c['humidity']}%, "
+            f"Wind: {c['windspeedKmph']} km/h"
+        )
+    except Exception as e:
+        return f"Could not get weather for {city}: {e}"
 
 
 def run_tool(name, args):
     if name == "get_time":
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if name == "calculate":
-        return str(eval(args["expression"], SAFE_MATH))
+    if name == "get_weather":
+        return get_weather(args["city"])
     return f"Unknown tool: {name}"
 
 
@@ -105,6 +124,8 @@ def agent(user_input):
     #        - Append:     messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
     #
     #   5. Loop back to step 1. The model sees the results and decides next.
+    #
+    # Try: "What's the weather in Tokyo?" to see the weather tool in action.
     # ==========================================================
     
     while True:
@@ -132,7 +153,7 @@ def agent(user_input):
 
 if __name__ == "__main__":
     print("Agent Loop Demo")
-    print("This agent has two tools: time and calculator.")
+    print("This agent has two tools: time and weather.")
     print("Press Ctrl+C to exit.\n")
 
     while True:

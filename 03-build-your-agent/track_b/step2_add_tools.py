@@ -1,15 +1,15 @@
 """
 Track B - Step 2: Add Tools
 
-Same agent, more tools: calculator and web search.
+Same agent, more tools: weather and web search.
 Notice the agent loop doesn't change at all - you just add definitions and functions.
 
-YOUR TASK: Fill in the two TODOs below to add calculator and web search tools.
+YOUR TASK: Fill in the two TODOs below to add weather and web search tools.
 Check your work against solutions/step2_add_tools.py
 """
 
 import json
-import math
+import os
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -18,7 +18,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 client = OpenAI()
 
 SYSTEM_PROMPT = "You are a friendly personal assistant. Use your tools when they'd help."
@@ -36,58 +36,62 @@ tools = [
     # ==========================================================
     # TODO 1: Add two more tool definitions.
     #
-    # Tool A: "calculate"
-    #   - description: "Evaluate a math expression like '2**10', 'sqrt(144)', or '15 * 0.18'"
-    #   - parameters: one required string called "expression"
+    # Tool A: "get_weather"
+    #   - description: "Get the current weather for any city in the world. Returns temperature, conditions, humidity, and wind."
+    #   - parameters: one required string called "city"
     #     Example structure:
     #     "parameters": {
     #         "type": "object",
     #         "properties": {
-    #             "expression": {"type": "string", "description": "Math expression"}
+    #             "city": {"type": "string", "description": "City name, e.g. 'Toronto', 'London', 'Tokyo'"}
     #         },
-    #         "required": ["expression"],
+    #         "required": ["city"],
     #     }
     #
     # Tool B: "web_search"
     #   - description: "Search the web for information"
     #   - parameters: one required string called "query"
-    #     (same structure as calculate, but with "query" instead)
+    #     (same structure as get_weather, but with "query" instead)
     # ==========================================================
 ]
 
-# Safe math functions that eval() is allowed to use (no builtins = no dangerous code)
-SAFE_MATH = {
-    "__builtins__": {},
-    "sqrt": math.sqrt, "sin": math.sin, "cos": math.cos,
-    "log": math.log, "pi": math.pi, "e": math.e,
-    "abs": abs, "round": round, "pow": pow,
-}
+
+def get_weather(city):
+    """Get real-time weather from wttr.in (no API key needed)."""
+    try:
+        url = f"https://wttr.in/{urllib.parse.quote(city)}?format=j1"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+        if "data" in data:
+            data = data["data"]
+        c = data["current_condition"][0]
+        return (
+            f"{city}: {c['temp_C']}\u00b0C ({c['temp_F']}\u00b0F), "
+            f"{c['weatherDesc'][0]['value']}, "
+            f"Humidity: {c['humidity']}%, "
+            f"Wind: {c['windspeedKmph']} km/h"
+        )
+    except Exception as e:
+        return f"Could not get weather for {city}: {e}"
 
 
 def web_search(query):
-    """Search DuckDuckGo and return text snippets. No API key needed."""
+    """Search the web via Brave Search API."""
+    api_key = os.environ.get("BRAVE_SEARCH_API_KEY", "")
+    url = "https://api.search.brave.com/res/v1/web/search?q=" + urllib.parse.quote(query)
+    req = urllib.request.Request(url, headers={
+        "Accept": "application/json",
+        "X-Subscription-Token": api_key,
+    })
     try:
-        url = "https://html.duckduckgo.com/html/?q=" + urllib.parse.quote(query)
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            html = resp.read().decode("utf-8")
+            data = json.loads(resp.read())
         results = []
-        for chunk in html.split('class="result__snippet"')[1:4]:
-            end = chunk.find("</")
-            if end > 0:
-                text = chunk[1:end]
-                clean = ""
-                in_tag = False
-                for ch in text:
-                    if ch == "<":
-                        in_tag = True
-                    elif ch == ">":
-                        in_tag = False
-                    elif not in_tag:
-                        clean += ch
-                clean = clean.replace("&amp;", "&").replace("&quot;", '"').replace("&#x27;", "'").strip()
-                if clean:
-                    results.append(clean)
+        for i, r in enumerate(data.get("web", {}).get("results", [])[:5]):
+            title = r.get("title", "")
+            desc = r.get("description", "")
+            results.append(f"{i+1}. {title}\n   {desc}")
         return "\n\n".join(results) if results else "No results found."
     except Exception as e:
         return f"Search failed: {e}"
@@ -98,12 +102,11 @@ def run_tool(name, args):
     if name == "get_current_time":
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # ==========================================================
-    # TODO 2: Add the "calculate" and "web_search" branches.
+    # TODO 2: Add the "get_weather" and "web_search" branches.
     #
-    # calculate:
-    #   - Evaluate: result = eval(args["expression"], SAFE_MATH)
-    #   - Return str(result)
-    #   - Wrap in try/except, return f"Error: {e}" on failure
+    # get_weather:
+    #   - Call: get_weather(args["city"])
+    #   - Return the result
     #
     # web_search:
     #   - Call: web_search(args["query"])
@@ -134,7 +137,7 @@ def agent_loop(messages):
 
 def main():
     print("Agent with Tools (Step 2)")
-    print("Tools: time, calculator, web search | Press Ctrl+C to exit\n")
+    print("Tools: time, weather, web search | Press Ctrl+C to exit\n")
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
