@@ -81,7 +81,7 @@ cp .env.example .env
 Copy-Item .env.example .env
 ```
 
-Open `.env` in your favourite code editor and paste in both keys (OpenAI + Anthropic).
+Open `.env` in your favourite code editor and paste in all 3 keys (OpenAI, Anthropic, and Brave Search).
 
 > Stuck? Raise your hand — TAs are circulating.
 

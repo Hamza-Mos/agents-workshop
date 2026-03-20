@@ -237,3 +237,27 @@ For setup instructions on any of these channels, see [github.com/Hamza-Mos/openc
 | **Twitter/X**        | "What's trending in AI?" / "Draft a tweet about [topic]"             | Twitter dev account + xurl ([setup guide, Part 3](https://github.com/Hamza-Mos/openclaw-setup))     |
 
 Docs: [docs.openclaw.ai](https://docs.openclaw.ai)
+
+## After the workshop: switch to your own API keys
+
+The workshop keys will be deactivated after today. To keep your agent running, swap in your own keys:
+
+1. Get your own Anthropic API key at [console.anthropic.com](https://console.anthropic.com/) (add ~$5 in credits to start)
+2. Run the configuration wizard:
+   ```bash
+   openclaw configure
+   ```
+3. When it asks for the API key, paste your new one
+4. Restart:
+   ```bash
+   openclaw gateway restart
+   ```
+
+You can also edit the config file directly:
+
+```bash
+openclaw config set anthropicApiKey "sk-ant-your-new-key-here"
+openclaw gateway restart
+```
+
+> To verify your config is valid: `openclaw config validate`
