@@ -22,20 +22,21 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 winget install astral-sh.uv --accept-source-agreements --accept-package-agreements
 ```
 
-Install Node.js and git:
+Install Node.js (version 22 or newer) and git:
 
 **macOS**
 
-Install the LTS version from [nodejs.org](https://nodejs.org/). If macOS asks to install developer tools later, click **Install**.
+Install from [nodejs.org](https://nodejs.org/) (LTS version). If macOS asks to install developer tools later, click **Install**.
 
-**Windows (PowerShell)**
+**Windows**
+
+Download and install from [nodejs.org](https://nodejs.org/) (LTS version). **Use the installer, not winget** — it adds Node to your PATH correctly. Then install git:
 
 ```powershell
-winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements
 winget install Git.Git --accept-source-agreements --accept-package-agreements
 ```
 
-Then reopen your terminal and check:
+**Close and reopen your terminal**, then check:
 
 ```bash
 uv --version
@@ -95,6 +96,7 @@ If you see `You:` waiting for input, you're ready.
 
 ## Troubleshooting
 
-- `uv`, `node`, or `git` not found: close the terminal and open a new one.
-- `AuthenticationError`: check that your `.env` file contains the real keys.
-- `No module named 'openai'`: use `uv run`, not `python`.
+- **`node` not found (Windows, installed via winget):** winget updates your PATH, but your current terminal doesn't see it. **Close PowerShell and open a new one.** This is a [known winget behavior](https://github.com/microsoft/winget-cli/issues/222). If a fresh terminal still doesn't work, uninstall (`winget uninstall OpenJS.NodeJS.LTS`) and reinstall from [nodejs.org](https://nodejs.org) — the installer handles PATH more reliably.
+- **`uv` or `git` not found:** same fix — close and reopen your terminal.
+- **`AuthenticationError`:** check that your `.env` file contains the real keys, not the placeholder text.
+- **`No module named 'openai'`:** use `uv run`, not `python`.
