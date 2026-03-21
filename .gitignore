@@ -9,8 +9,8 @@ __pycache__/
 venv/
 
 # Agent runtime files (created during exercises)
-memory.json
-agent_memory.json
+# memory.json
+# agent_memory.json
 
 # Solutions (revealed at end of workshop)
 # **/*solutions/
